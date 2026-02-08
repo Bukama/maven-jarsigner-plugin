@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +30,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import static org.apache.maven.plugins.jarsigner.TestJavaToolResults.RESULT_ERROR;
 import static org.apache.maven.plugins.jarsigner.TestJavaToolResults.RESULT_OK;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -176,6 +175,15 @@ public class JarsignerSignMojoParallelTest {
 
     @Test(timeout = 30000)
     public void test10Files2ParallelOneFail() throws Exception {
+        /*
+        This tests relies on English language.
+        Therefore, save the default locale before execution, set to English and back at end of test
+        The JUnit Pioneer DefaultLocale-Extension was contributed to JUnit and is available from JUnit 6.1.0-M2 on.
+        Then, this manuel setting can be changed to an annotation.
+         */
+        Locale orginalLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("en", "US"));
+
         configuration.put("archiveDirectory", createArchives(10).getPath());
         configuration.put("threadCount", "2");
 
@@ -190,7 +198,9 @@ public class JarsignerSignMojoParallelTest {
             mojo.execute();
         });
 
+
         assertThat(mojoException.getMessage(), containsString(String.valueOf("Failed executing 'jarsigner ")));
+        Locale.setDefault(orginalLocale);
     }
 
     @Test
