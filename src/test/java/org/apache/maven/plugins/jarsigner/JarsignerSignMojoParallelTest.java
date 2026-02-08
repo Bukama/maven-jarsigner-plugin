@@ -30,6 +30,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -41,6 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import static org.apache.maven.plugins.jarsigner.TestJavaToolResults.RESULT_ERROR;
 import static org.apache.maven.plugins.jarsigner.TestJavaToolResults.RESULT_OK;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -197,7 +199,6 @@ public class JarsignerSignMojoParallelTest {
         MojoExecutionException mojoException = assertThrows(MojoExecutionException.class, () -> {
             mojo.execute();
         });
-
 
         assertThat(mojoException.getMessage(), containsString(String.valueOf("Failed executing 'jarsigner ")));
         Locale.setDefault(orginalLocale);
